@@ -18,7 +18,6 @@ body {
   overflow: hidden;
 }
 
-/* เพิ่มดาวกระพริบเบาๆ */
 .bg-star {
   position: absolute;
   width: 3px;
@@ -28,13 +27,11 @@ body {
   animation: twinkle 2s infinite ease-in-out;
   opacity: 0.8;
 }
-
 @keyframes twinkle {
   0%, 100% { opacity: 0.2; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.3); }
 }
 
-/* ปุ่ม */
 button {
   font-size: 40px;
   padding: 30px 80px;
@@ -46,12 +43,10 @@ button {
   transition: all 0.3s ease, transform 0.2s ease;
   box-shadow: 0 4px 20px rgba(0, 255, 100, 0.25);
 }
-
 button:hover {
   transform: scale(1.05);
   box-shadow: 0 6px 25px rgba(0, 255, 100, 0.4);
 }
-
 button.loading {
   background: #2ea043;
   opacity: 0.7;
@@ -59,7 +54,6 @@ button.loading {
   transform: scale(0.95);
 }
 
-/* ชื่อ / ข้อความ */
 .name {
   margin-top: 30px;
   font-size: 28px;
@@ -67,7 +61,6 @@ button.loading {
   text-shadow: 0 0 15px rgba(100, 255, 100, 0.3);
 }
 
-/* แอนิเมชันเวลาเปลี่ยนข้อความ */
 .fade-in {
   animation: fadeIn 0.8s ease forwards;
 }
@@ -76,7 +69,6 @@ button.loading {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* เอฟเฟกต์ particle วิ่ง */
 .particle {
   position: absolute;
   width: 6px;
@@ -94,12 +86,12 @@ button.loading {
 
 <body>
 
-<!-- ปุ่มและข้อความ -->
 <button onclick="next24Game()">Next</button>
 <div class="name" id="name">—</div>
 
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzoO3R5swrLRN23u8iOtxmFMVY14YxL2Tb_qmrp347A1_k8qMADuax_ryTVDGpAechJ/exec";
+// 🔗 ใส่ URL ของ Web App ที่ได้จาก Google Apps Script ตรงนี้
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxxAxbMSasu-BKd7V8yc0AxYmWB-AlvQB3SHio3GF0Mgd4Qd2-eUCPlnCzVi0ihqHdi/exec";
 const GAME_NAME = "N/A";
 
 /* สร้างดาวแบบสุ่ม */
@@ -136,8 +128,14 @@ function next24Game() {
     .then(res => res.text())
     .then(txt => {
       if (txt.startsWith("OK|")) {
-        const name = txt.split("|")[1];
-        nameEl.innerText = "ตอนนี้คิว: " + name;
+        const parts = txt.split("|");
+        const name = parts[1];
+        const phone = parts[2] || "—";
+        nameEl.innerHTML = `
+          <div class="fade-in">
+            ตอนนี้คิว: <strong>${name}</strong><br>
+            เบอร์: <span style="color:#39d353">${phone}</span>
+          </div>`;
       } else if (txt === "NOT_FOUND") {
         nameEl.innerText = `ไม่มีคิวแล้ว`;
       } else {
