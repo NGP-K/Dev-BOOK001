@@ -13,28 +13,151 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
   color: #f0f6fc;
+  overflow: hidden;
 }
 
+/* เพิ่มดาวกระพริบเบาๆ */
+.bg-star {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle 2s infinite ease-in-out;
+  opacity: 0.8;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* ปุ่ม */
 button {
   font-size: 40px;
   padding: 30px 80px;
   border-radius: 18px;
   border: none;
   cursor: pointer;
-  background: #238636;
+  background: linear-gradient(145deg, #238636, #2ea043);
   color: white;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0, 255, 100, 0.25);
 }
 
 button:hover {
-  background: #2ea043;
+  transform: scale(1.05);
+  box-shadow: 0 6px 25px rgba(0, 255, 100, 0.4);
 }
 
 button.loading {
   background: #2ea043;
   opacity: 0.7;
+  cursor: wait;
+  transform: scale(0.95);
+}
+
+/* ชื่อ / ข้อความ */
+.name {
+  margin-top: 30px;
+  font-size: 28px;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 15px rgba(100, 255, 100, 0.3);
+}
+
+/* แอนิเมชันเวลาเปลี่ยนข้อความ */
+.fade-in {
+  animation: fadeIn 0.8s ease forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* เอฟเฟกต์ particle วิ่ง */
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(0,255,150,0.7);
+  animation: floatUp 3s linear infinite;
+}
+@keyframes floatUp {
+  from { transform: translateY(100vh) scale(0.8); opacity: 1; }
+  to { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ปุ่มและข้อความ -->
+<button onclick="next24Game()">Next</button>
+<div class="name" id="name">—</div>
+
+<script>
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzoO3R5swrLRN23u8iOtxmFMVY14YxL2Tb_qmrp347A1_k8qMADuax_ryTVDGpAechJ/exec";
+const GAME_NAME = "N/A";
+
+/* สร้างดาวแบบสุ่ม */
+for (let i = 0; i < 40; i++) {
+  const star = document.createElement('div');
+  star.className = 'bg-star';
+  star.style.left = Math.random() * 100 + 'vw';
+  star.style.top = Math.random() * 100 + 'vh';
+  star.style.animationDelay = (Math.random() * 2) + 's';
+  document.body.appendChild(star);
+}
+
+/* particle effect */
+function spawnParticle() {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = Math.random() * 100 + 'vw';
+  p.style.animationDuration = (2 + Math.random() * 2) + 's';
+  document.body.appendChild(p);
+  setTimeout(() => p.remove(), 3000);
+}
+setInterval(spawnParticle, 400);
+
+function next24Game() {
+  const btn = document.querySelector("button");
+  const nameEl = document.getElementById("name");
+  
+  btn.classList.add("loading");
+  btn.disabled = true;
+  nameEl.innerText = "กำลังเรียกคิว...";
+  nameEl.classList.remove("fade-in");
+
+  fetch(WEB_APP_URL + "?game=" + encodeURIComponent(GAME_NAME), { method: "POST" })
+    .then(res => res.text())
+    .then(txt => {
+      if (txt.startsWith("OK|")) {
+        const name = txt.split("|")[1];
+        nameEl.innerText = "ตอนนี้คิว: " + name;
+      } else if (txt === "NOT_FOUND") {
+        nameEl.innerText = `ไม่มีคิวแล้ว`;
+      } else {
+        nameEl.innerText = txt;
+      }
+      nameEl.classList.add("fade-in");
+    })
+    .catch(() => {
+      nameEl.innerText = "เกิดข้อผิดพลาด";
+      nameEl.classList.add("fade-in");
+    })
+    .finally(() => {
+      btn.classList.remove("loading");
+      btn.disabled = false;
+    });
+}
+</script>
+
+</body>
+</html>  opacity: 0.7;
   cursor: wait;
 }
 
